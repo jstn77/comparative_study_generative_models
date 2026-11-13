@@ -1,25 +1,16 @@
 import torch
-
 from torchvision import datasets, transforms
 from torch.utils.data import DataLoader, random_split
-
-from configurations.configuration import (
-    DATA_DIR,
-    BATCH_SIZE,
-    TRAIN_RATIO,
-    VAL_RATIO,
-    TEST_RATIO,
-    SEED
-)
+from configurations.configuration import (DATA_DIR, BATCH_SIZE, TRAIN_RATIO, VAL_RATIO, TEST_RATIO, SEED)
 
 def get_data_loaders():
-    #IMAGE TRANSFORMATION
+    #transform (preprocess)
     transform = transforms.Compose([
         transforms.ToTensor(),
         transforms.Normalize((0.5,), (0.5,))
     ])
 
-    #DOWNLOAD DATASET
+    #download
     train_dataset = datasets.FashionMNIST(
         root=DATA_DIR,
         train=True,
@@ -40,23 +31,19 @@ def get_data_loaders():
     ])
 
     total_size = len(full_dataset)
-
     train_size = int(total_size * TRAIN_RATIO)
-
     val_size = int(total_size * VAL_RATIO)
-
     test_size = int(total_size * TEST_RATIO)
 
-    #SPLIT DATASET
+    #splitting dataset
     generator = torch.Generator().manual_seed(SEED)
-
     train_set, val_set, test_set = random_split(
         full_dataset,
         [train_size, val_size, test_size],
         generator=generator
     )
 
-    #DATA LOADER
+    #data loader
     train_loader = DataLoader(
         train_set,
         batch_size=BATCH_SIZE,

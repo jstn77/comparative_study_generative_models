@@ -1,9 +1,7 @@
 import os
 import torch
 
-PROJECT_ROOT = os.path.dirname(
-    os.path.dirname(os.path.abspath(__file__))
-)
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 DATA_DIR = os.path.join(PROJECT_ROOT, "data", "fashion_mnist")
 RESULT_DIR = os.path.join(PROJECT_ROOT, "results")
@@ -26,9 +24,7 @@ TEST_RATIO = 0.10
 
 BATCH_SIZE = 128
 
-DEVICE = torch.device(
-    "cuda" if torch.cuda.is_available() else "cpu"
-)
+DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 LATENT_DIM = 64
 HIDDEN_DIM = 256
@@ -54,5 +50,5 @@ SPARSITY_LAMBDA = 0.001
 NUM_GENERATED_SAMPLES = 16
 LATENCY_BATCH_SIZE = 64
 
-print("Configuration loaded successfully!")
+print("Loaded successfully!")
 print("Device:", DEVICE)
