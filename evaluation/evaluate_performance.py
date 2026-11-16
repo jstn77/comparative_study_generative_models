@@ -1,25 +1,11 @@
-"""
-Summarize training time/epoch from existing histories and benchmark inference
-latency for AE, Sparse AE, VAE, Vanilla GAN and DCGAN.
-Run from project root:
-    python evaluation/evaluate_performance.py
-
-DDPM is deliberately excluded from local latency timing because its 1000-step
-sampling can be extremely slow on a CPU-only laptop. Run the DDPM latency
-benchmark on the same GPU environment used for DDPM (e.g. Kaggle T4) if needed.
-No training is performed.
-"""
 import csv
 import sys
 import time
 from pathlib import Path
-
 import torch
-
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
-
 from configurations.configuration import (
     DEVICE, CHECKPOINT_DIR, METRIC_DIR, LATENCY_BATCH_SIZE,
     GAN_NOISE_DIM, DCGAN_NOISE_DIM
@@ -33,7 +19,6 @@ from models.dcgan import DCGANGenerator
 WARMUP = 5
 REPEATS = 30
 
-
 def read_epoch_time(csv_name):
     path = Path(METRIC_DIR) / csv_name
     with path.open("r", newline="", encoding="utf-8-sig") as f:
@@ -45,7 +30,6 @@ def read_epoch_time(csv_name):
         "total_recorded_training_seconds": sum(values) if values else None,
     }
 
-
 def load_model(model, filename, state_key="model_state_dict"):
     path = Path(CHECKPOINT_DIR) / filename
     try:
@@ -55,11 +39,9 @@ def load_model(model, filename, state_key="model_state_dict"):
     model.load_state_dict(ckpt[state_key])
     return model.to(DEVICE).eval()
 
-
 def sync():
     if DEVICE.type == "cuda":
         torch.cuda.synchronize()
-
 
 @torch.no_grad()
 def time_forward(label, callable_fn):
@@ -72,7 +54,6 @@ def time_forward(label, callable_fn):
     sync()
     elapsed = (time.perf_counter() - start) / REPEATS
     return elapsed * 1000.0
-
 
 def main():
     n = LATENCY_BATCH_SIZE
@@ -137,8 +118,6 @@ def main():
         writer.writerows(results)
 
     print(f"\n[SAVED] {out}")
-    print("Catatan: latency DDPM belum diukur oleh script lokal ini.")
-
 
 if __name__ == "__main__":
     main()

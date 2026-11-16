@@ -1,0 +1,3 @@
+model,dress_classifier_probability,sneaker_classifier_probability
+Vanilla GAN,0.9999924898147583,1.0
+DCGAN,0.9999996423721313,0.9999998807907104

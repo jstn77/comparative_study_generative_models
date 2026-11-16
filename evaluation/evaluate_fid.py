@@ -1,14 +1,3 @@
-"""
-FID evaluation for VAE, Vanilla GAN, DCGAN; optionally DDPM.
-Run from project root:
-    python evaluation/evaluate_fid.py
-For DDPM too (slow; recommended on Kaggle GPU):
-    python evaluation/evaluate_fid.py --include-ddpm
-
-Uses equal sample counts and the same Inception feature pipeline for each model.
-Fashion-MNIST grayscale images are repeated to RGB and resized to 299x299
-because the standard Inception FID extractor expects 3-channel images.
-"""
 import argparse
 import csv
 import sys
@@ -16,6 +5,8 @@ from pathlib import Path
 from types import MethodType
 import torch
 import torch.nn.functional as F
+import os
+os.environ["TORCH_HOME"] = r"D:\TorchCache"
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT) not in sys.path:
@@ -42,7 +33,6 @@ def load_checkpoint(path):
         return torch.load(path, map_location=DEVICE)
 
 def to_inception_uint8(images):
-    # input [-1,1], output uint8 [0,255], RGB 299x299
     images = ((images.clamp(-1, 1) + 1.0) / 2.0)
     images = images.repeat(1, 3, 1, 1)
     images = F.interpolate(images, size=(299, 299), mode="bilinear", align_corners=False)
@@ -157,7 +147,6 @@ def main():
 
     out = Path(METRIC_DIR) / "fid_test_metrics.csv"
     out.parent.mkdir(parents=True, exist_ok=True)
-    # Merge results when script is run once without DDPM and later with DDPM.
     existing = {}
     if out.exists():
         with out.open("r", newline="", encoding="utf-8") as f:

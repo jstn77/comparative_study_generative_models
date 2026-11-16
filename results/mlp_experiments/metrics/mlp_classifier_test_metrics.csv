@@ -1,0 +1,2 @@
+model,checkpoint_epoch,test_accuracy,test_loss,target_accuracy
+MLP Classifier,27,0.8872857142857142,0.40607248388017925,0.88

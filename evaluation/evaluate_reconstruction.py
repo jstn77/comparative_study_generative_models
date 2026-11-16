@@ -1,23 +1,12 @@
-"""
-Reconstruction metrics for Vanilla AE, Sparse AE, and VAE.
-Run from project root:
-    python evaluation/evaluate_reconstruction.py
-
-Metrics are calculated on the held-out Test Set (7,000 Fashion-MNIST images).
-Outputs: results/metrics/reconstruction_test_metrics.csv
-"""
 import csv
 import sys
 from pathlib import Path
-
 import numpy as np
 import torch
 from skimage.metrics import structural_similarity
-
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
-
 from configurations.configuration import DEVICE, CHECKPOINT_DIR, METRIC_DIR
 from data.dataset import get_data_loaders
 from models.vanilla_ae import Autoencoder
@@ -25,8 +14,7 @@ from models.sparse_ae import SparseAutoencoder
 from models.vae import VAE
 
 BATCH_SIZE = 128
-DATA_RANGE = 2.0  # images normalized to [-1, 1]
-
+DATA_RANGE = 2.0
 
 def load_state(model, filename):
     path = Path(CHECKPOINT_DIR) / filename
@@ -43,7 +31,6 @@ def load_state(model, filename):
     print(f"[LOAD] {filename} | best epoch: {ckpt.get('epoch', 'unknown')}")
     return model
 
-
 def calculate_metrics(model, test_loader, model_name):
     total_squared_error = 0.0
     total_elements = 0
@@ -55,7 +42,7 @@ def calculate_metrics(model, test_loader, model_name):
         for images, _ in test_loader:
             images = images.to(DEVICE)
             output = model(images)
-            if isinstance(output, tuple):  # VAE returns reconstruction, mu, logvar
+            if isinstance(output, tuple):  #VAE (reconstruction, mu, logvar)
                 output = output[0]
             output = output.clamp(-1, 1)
 
@@ -72,11 +59,7 @@ def calculate_metrics(model, test_loader, model_name):
                     else 10.0 * np.log10((DATA_RANGE ** 2) / mse_i)
                 )
                 ssim_values.append(
-                    structural_similarity(
-                        real_np[i, 0],
-                        pred_np[i, 0],
-                        data_range=DATA_RANGE
-                    )
+                    structural_similarity(real_np[i, 0],pred_np[i, 0],data_range=DATA_RANGE)
                 )
 
     mse = total_squared_error / total_elements
@@ -87,7 +70,6 @@ def calculate_metrics(model, test_loader, model_name):
         "test_ssim": float(np.mean(ssim_values)),
         "test_images": len(test_loader.dataset),
     }
-
 
 def main():
     _, _, test_loader = get_data_loaders()
@@ -117,7 +99,6 @@ def main():
         writer.writeheader()
         writer.writerows(results)
     print(f"\n[SAVED] {output}")
-
 
 if __name__ == "__main__":
     main()

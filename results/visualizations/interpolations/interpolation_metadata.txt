@@ -1,0 +1,16 @@
+FASHION-MNIST LATENT INTERPOLATION
+==================================================
+Device: cpu
+Classes: Dress (3), Sneaker (7)
+Alpha values: [0.0, 0.2, 0.4, 0.6, 0.8, 1.0]
+GAN search samples: 10000
+
+GAN CLASSIFIER CONFIDENCE
+
+Vanilla GAN
+Dress: 0.999992
+Sneaker: 1.000000
+
+DCGAN
+Dress: 1.000000
+Sneaker: 1.000000

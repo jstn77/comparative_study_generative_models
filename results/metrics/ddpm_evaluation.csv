@@ -1,0 +1,2 @@
+model,fid_score,fid_sample_count,inference_batch_size,inference_latency_ms_batch,reverse_diffusion_steps,epochs_completed,avg_epoch_time_seconds,test_mse,test_psnr,test_ssim
+DDPM,36.56655502319336,1000,64,19988.81090300074,1000,50,65.38711976839998,N/A,N/A,N/A
